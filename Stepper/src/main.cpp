@@ -28,20 +28,20 @@ LOG_MODULE_REGISTER(logging_blog, LOG_LEVEL_DBG);
 
 static const uint8_t
 	half_step_lookup_table[NUM_CONTROL_PINS * MAX_MICRO_STEP_RES][NUM_CONTROL_PINS] = {
-		{1u, 1u, 0u, 0u}, 
+	{1u, 1u, 0u, 0u}, 
         {0u, 1u, 0u, 0u}, 
         {0u, 1u, 1u, 0u}, 
         {0u, 0u, 1u, 0u},
-		{0u, 0u, 1u, 1u}, 
+	{0u, 0u, 1u, 1u}, 
         {0u, 0u, 0u, 1u}, 
         {1u, 0u, 0u, 1u}, 
         {1u, 0u, 0u, 0u}};
 
 static const uint8_t
     full_step_lookup_table[NUM_CONTROL_PINS][NUM_CONTROL_PINS] = {
-		{1u, 1u, 0u, 0u}, 
+	{1u, 1u, 0u, 0u}, 
         {0u, 1u, 1u, 0u}, 
-		{0u, 0u, 1u, 1u}, 
+	{0u, 0u, 1u, 1u}, 
         {1u, 0u, 0u, 1u}};
 
 int main() 
