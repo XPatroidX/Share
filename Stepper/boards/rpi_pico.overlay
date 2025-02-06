@@ -1,0 +1,17 @@
+/{
+    steppers {
+        compatible = "gpio-keys";
+        pina: pina {
+            gpios = <&gpio0 10 0x0>;
+        };
+        pinb: pinb {
+            gpios = <&gpio0 11 0x0>;
+        };
+        pinc: pinc {
+            gpios = <&gpio0 12 0x0>;
+        };
+        pind: pind {
+            gpios = <&gpio0 13 0x0>;
+        };
+    };
+};
