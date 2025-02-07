@@ -1,0 +1,8 @@
+/{
+    rot_sensor {
+        compatible = "gpio-keys";
+        pina: pina {
+            gpios = <&gpio0 10 0x0>;
+        };
+    };
+};
