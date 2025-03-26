@@ -1,0 +1,22 @@
+/ {
+    ledpwm: ledpwm {
+        compatible = "pwm-device";
+        status = "okay";
+        pwms = <&pwm 0 PWM_MSEC(1) PWM_POLARITY_NORMAL>;
+    };
+};
+
+
+&pinctrl{
+    mypwm: mypwm {
+        group1 {
+            pinmux = <PWM_0A_P0>;
+        };
+    };
+};
+
+&pwm {
+    pinctrl-0 = <&mypwm>;
+    status = "okay";
+    divider-int-4 = <255>;
+};

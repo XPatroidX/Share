@@ -1,0 +1,23 @@
+
+&pinctrl {
+
+        myi2c: myi2c {
+            group1 {
+                pinmux = <I2C0_SDA_P4>, <I2C0_SCL_P5>;
+                input-enable;
+                input-schmitt-enable;
+            };
+        };
+};
+
+&i2c0 {
+
+    status = "okay";
+    pinctrl-0 = <&myi2c>;
+
+        hmc5883l: hmc5883l@1e {
+            compatible = "honeywell,hmc5883l";
+            reg = <0x1e>;
+            status = "okay";
+        };
+};

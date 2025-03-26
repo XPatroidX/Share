@@ -1,0 +1,14 @@
+# Copyright (c) 2022 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+description: GPIO-driven something.
+
+compatible: "gpio-ctrl"
+
+include: [ base.yaml ]
+
+properties:
+  gpios:
+    required: true
+    type: phandle-array
+    description: GPIO specifier driving the thing.
