@@ -15,9 +15,9 @@
     status = "okay";
     pinctrl-0 = <&myi2c>;
 
-        hmc5883l: hmc5883l@1e {
-            compatible = "honeywell,hmc5883l";
-            reg = <0x1e>;
+        hmc5883l: hmc5883l@d {
+            compatible = "i2c-device";
+            reg = <0xd>;
             status = "okay";
         };
 };

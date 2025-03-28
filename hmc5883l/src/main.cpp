@@ -6,59 +6,70 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/sys/util.h>
-#include "drivers/hmc5883l.c"
+#include <cstdint>
+#include "zephyr/drivers/i2c.h"
+#include <math.h>
 
 
 LOG_MODULE_REGISTER(logging_blog, LOG_LEVEL_DBG);
 
-#define HMC                DT_NODELABEL(hmc5883l)
+#define HMC                DT_NODELABEL(i2c0)
+#define ADDRESS            0x0D
+
+uint16_t heading (double x, double y)
+{
+    double rad = atan2(y, x);
+    int16_t deg = (180*rad) / 3.14;
+    if (deg < 0)
+        deg += 360;
+    return deg;
+}
 
 int main() 
 {
     const struct device* dev = DEVICE_DT_GET(HMC);
-    struct sensor_value magn[3];
-    //gpio_pin_set_raw(pin_a.port, 10, 1);
-/*     k_msleep(5000);
-    int val = gpio_pin_set(pin_a.port, 10, 1);
-    printk("pin: %p\n", &pin_a);
-    printk("config: %d\n", val1);
-    printk("toggle: %d", val);
- */
-    
-/*     uint32_t steps = 1;
-    int64_t start = k_uptime_get();
+    device_is_ready(dev);
+    //struct sensor_value magn[3];
+    i2c_reg_write_byte(dev, ADDRESS, 0x0B, 0x01);
+    k_msleep(100);
+    i2c_reg_write_byte(dev, ADDRESS, 0x09, 0x1D);
+    i2c_reg_write_byte(dev, ADDRESS, 0x0A, 0x00);
 
-    while(steps < 4096) {
-        uint8_t j = 0;
-        while( j < 8) {
-            gpio_pin_set(pin_a.port, 10, half_step_lookup_table[j][0]);
-            gpio_pin_set(pin_b.port, 11, half_step_lookup_table[j][1]);
-            gpio_pin_set(pin_c.port, 12, half_step_lookup_table[j][2]);
-            gpio_pin_set(pin_d.port, 13, half_step_lookup_table[j][3]);
-            //printk("j: %d, steps: %d\n", j, steps);
-            j++;
-            steps++;
-            k_usleep(950);
-            }
-        }
-
-    int64_t now = k_uptime_get();
-    int64_t time = now - start;
-    double vel = (360.0 / time) * 1000;
-    string str = to_string(vel);
-    printk("velocità: %d; ", (int) vel);
-    //printk ("steps: %u\n", steps - 1); */
     k_msleep(5000);
     while (1) {
-/*         printk("%d\n", device_is_ready(dev));
-        printk("%d\n", sensor_sample_fetch(dev));
-        printk( "%d\n", sensor_channel_get(dev, SENSOR_CHAN_MAGN_XYZ, magn));
-        printk("acceleration: X:%d,%d; Y:%d,%d; Z:%d,%d\n",magn[0].val1, magn[0].val2, magn[1].val1, magn[1].val2, magn[2].val1, magn[2].val2);
-        k_msleep(1000); */
-        hmc5883l_sample_fetch(dev, SENSOR_CHAN_MAGN_XYZ);
-        hmc5883l_channel_get(dev, SENSOR_CHAN_MAGN_XYZ, magn);
-        printk("acceleration: X:%d,%d; Y:%d,%d; Z:%d,%d\n",magn[0].val1, magn[0].val2, magn[1].val1, magn[1].val2, magn[2].val1, magn[2].val2);
-        k_msleep(1000);
+        uint8_t data [6] ={0,0,0,0,0,0};
+        //uint8_t wdata[2] ={0x1A, 0x00};
+        //int i = i2c_burst_read(dev, ADDRESS, 0x00, &data[0], 1);
+        uint8_t status = 0;
+        i2c_reg_read_byte(dev, ADDRESS, 0x06, &status);
+        if(status & 0x01)
+        {
+            //int i = i2c_read(dev,data, 6, 0x0d);
+            int i = i2c_reg_read_byte(dev, ADDRESS, 0x00, &data[0]);
+            i += i2c_reg_read_byte(dev, ADDRESS, 0x01, &data[1]);
+            i += i2c_reg_read_byte(dev, ADDRESS, 0x02, &data[2]);
+            i += i2c_reg_read_byte(dev, ADDRESS, 0x03, &data[3]);
+            i += i2c_reg_read_byte(dev, ADDRESS, 0x04, &data[4]);
+            i += i2c_reg_read_byte(dev, ADDRESS, 0x05, &data[5]);
+    
+            int16_t x = ((data[1] << 8) | data[0]);
+            int16_t y = ((data[3] << 8) | data[2]);
+            int16_t z = ((data[5] << 8) | data[4]);
+            if (x > 32767) 
+                x -= 65536;
+            if (y > 32767) 
+                y -= 65536;
+            if (z > 32767) 
+                z -= 65536;
+            uint16_t deg = heading(x, y);
+            //printk("Magnetic field: X:%d; Y:%d; Z:%d, heading:%d, success:%d\n", x, y, z, deg, i);
+            printk("%d,%d,%d\n", x, y, z);
+            k_msleep(500);
+        }
+        else
+        {
+            printk("Data not rady");
+        }
     }
     return 0;
 }
