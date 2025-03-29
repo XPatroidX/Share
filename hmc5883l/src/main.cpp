@@ -63,12 +63,12 @@ int main()
                 z -= 65536;
             uint16_t deg = heading(x, y);
             //printk("Magnetic field: X:%d; Y:%d; Z:%d, heading:%d, success:%d\n", x, y, z, deg, i);
-            printk("%d,%d,%d\n", x, y, z);
+            printk("%d;%d;%d\n", x, y, z);
             k_msleep(500);
         }
         else
         {
-            printk("Data not rady");
+            printk("Error: Data not rady\n");
         }
     }
     return 0;
