@@ -1,3 +1,16 @@
+/ {
+    chosen {
+        zephyr,console = &cdc_acm_uart0;
+        uart,gps = &uart1;
+    };
+};
+
+&zephyr_udc0 {
+    cdc_acm_uart0: cdc_acm_uart0 {
+    	compatible = "zephyr,cdc-acm-uart";
+        label = "CDC_ACM_0";
+    };
+};
 
 &pinctrl {
 
@@ -15,7 +28,7 @@
     status = "okay";
     pinctrl-0 = <&myi2c>;
 
-        hmc5883l: hmc5883l@d {
+        qmc5883l: qmc5883l@d {
             compatible = "i2c-device";
             reg = <0xd>;
             status = "okay";
